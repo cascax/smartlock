@@ -10,8 +10,6 @@ def main():
         digit = None
         while digit == None:
             digit = kp.getKey()
-        hardware.led(True)
-        hardware.led(False)
         # 判断输入
         if digit == '*':
             password = ''

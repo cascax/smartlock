@@ -51,6 +51,7 @@ class ServerHandle(StreamRequestHandler):
         while True:
             # print '-s'
             condition.acquire()
+            # 等待客户端请求
             if not openingDoor:
                 condition.wait()
             self.openDoor(clientName)
@@ -70,6 +71,7 @@ class ServerHandle(StreamRequestHandler):
             condition.acquire()
             openingDoor = True
             clientName = self.identity
+            # 唤醒树莓派的连接
             condition.notify()
             condition.release()
 

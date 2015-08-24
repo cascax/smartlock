@@ -45,7 +45,7 @@ def openThenClose(steps = 270):
     closeDoor(steps)
 
 class Keypad():
-    # CONSTANTS   
+    
     KEYPAD = [
     [1,2,3,"A"],
     [4,5,6,"B"],
@@ -83,6 +83,8 @@ class Keypad():
         if rowVal < 0 or rowVal > self.rowNum-1:
             self.exit()
             return
+        # lit led
+        led(True)
 
         # Convert columns to input
         for j in range(self.columnNum):
@@ -115,3 +117,5 @@ class Keypad():
                 GPIO.setup(self.ROW[i], GPIO.IN, pull_up_down=GPIO.PUD_UP) 
         for j in range(self.columnNum):
                 GPIO.setup(self.COLUMN[j], GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        # close led
+        led(False)
