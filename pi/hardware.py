@@ -6,8 +6,18 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 
 def led(open, ledPin = 23):
+    """Set LED's status"""
+    print 'led',open
     GPIO.setup(ledPin, GPIO.OUT)
     GPIO.output(ledPin, open)
+
+def flickerLED(times = 1, ledPin = 23):
+    GPIO.setup(ledPin, GPIO.OUT)
+    for i in range(times):
+        GPIO.output(ledPin, True)
+        time.sleep(0.1)
+        GPIO.output(ledPin, False)
+        time.sleep(0.1)
 
 def rotateMotor(steps, clockwise=True):
     if clockwise:
@@ -59,6 +69,7 @@ class Keypad():
     def __init__(self):
         self.rowNum = len(self.ROW)
         self.columnNum = len(self.COLUMN)
+        self.litLED = False
 
     def getKey(self):
 
@@ -83,8 +94,9 @@ class Keypad():
         if rowVal < 0 or rowVal > self.rowNum-1:
             self.exit()
             return
-        # lit led
+        # light led
         led(True)
+        self.litLED = True
 
         # Convert columns to input
         for j in range(self.columnNum):
@@ -118,4 +130,5 @@ class Keypad():
         for j in range(self.columnNum):
                 GPIO.setup(self.COLUMN[j], GPIO.IN, pull_up_down=GPIO.PUD_UP)
         # close led
-        led(False)
+        if self.litLED:
+            led(False)

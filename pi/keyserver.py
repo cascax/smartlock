@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ##coding:utf-8
-import time, hardware
+import time, thread, hardware
 
 def main():
     kp = hardware.Keypad()
@@ -15,6 +15,7 @@ def main():
             password = ''
         elif digit == '#' and password == '28102B':
             print 'open the door'
+            thread.start_new_thread(hardware.flickerLED, (2,))
             hardware.openThenClose()
             password = ''
         else:
