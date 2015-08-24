@@ -14,7 +14,7 @@ def connect():
     if ifsucc == 'success':
         print 'remote server(%s, %s) connected successful' % server
     else:
-        print 'connect failed'
+        print 'remote server(%s, %s) refused' % server
         exit()
     s.send('[ServerPi]\n')
 
@@ -27,13 +27,25 @@ def handle():
                 order = match.group(1)
                 identity = match.group(2)
                 if order == 'opendoor':
-                    print '%s open the door' % identity
+                    print '%s open and close the door' % identity
                     hardware.openThenClose()
+                elif order == 'justopen':
+                    print '%s open the door' % identity
+                    hardware.openDoor()
+                elif order == 'closedoor':
+                    print '%s close the door' % identity
+                    hardware.closeDoor()
+                elif order == 'exit':
+                    s.close()
+                    break
     except socket.error:
         print 'lost remote server(%s, %s)' % server
 
 def begin():
-    connect()
-    handle()
+    try:
+        connect()
+        handle()
+    except socket.error, e:
+        print 'connect failed [%d]: %s' % (e.errno, socket.errorTab[e.errno])
 
 begin()

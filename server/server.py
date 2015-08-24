@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 #coding:utf-8
 from SocketServer import StreamRequestHandler, ThreadingTCPServer
-import filelog, re, threading
+from ThreadEvent import ThreadEvent
+import filelog, re, threading, time
 
 identityRe = re.compile(r'\[(.+)\]')
 condition = threading.Condition()
+# 收到客户端信息事件
+clientMsgEvent = ThreadEvent()
+# 树莓派端在线状态
 piOnline = False
-openingDoor = False
-clientName = ''
+# 正在操作门标志
+operatingDoor = False
 
 class ServerHandle(StreamRequestHandler):
     piName = 'ServerPi'
@@ -27,57 +31,86 @@ class ServerHandle(StreamRequestHandler):
             return
         
         if self.identity == self.piName:
-            global piOnline
-            # 更改树莓派服务器状态
-            condition.acquire()
-            piOnline = True
-            condition.release()
-            self.serverHandle()
+            self.setPiOnline(True) # 树莓派服务器状态设置上线
+            try:
+                self.serverHandle()
+            finally:
+                self.setPiOnline(False) # 树莓派服务器状态设置下线
         else:
             self.clientHandle()
 
     def finish(self):
         self.log('Offline (%s %s)' % (self.addr, self.identity))
-        if self.identity == self.piName:
-            global piOnline
-            # 更改树莓派服务器状态
-            condition.acquire()
-            piOnline = False
-            condition.release()
         StreamRequestHandler.finish(self)
 
     def serverHandle(self):
-        global openingDoor
+        global operatingDoor
+
         while True:
-            # print '-s'
-            condition.acquire()
             # 等待客户端请求
-            if not openingDoor:
-                condition.wait()
-            self.openDoor(clientName)
-            openingDoor = False
-            condition.release()
+            if not clientMsgEvent.isSet():
+                clientMsgEvent.wait()
+            clientName = clientMsgEvent.getIdentify()
+            eventName = clientMsgEvent.clear()
+            if eventName == 'opendoor':
+                if not operatingDoor:
+                    self.openDoor(clientName)
+            elif eventName == 'justopen' or eventName == 'closedoor':
+                if not operatingDoor:
+                    self.doorOperate(eventName, clientName)
+            elif eventName == 'exitpi':
+                self.exitPiServer(clientName)
+                break;
+
 
     def clientHandle(self):
-        global openingDoor, clientName
+        global piOnline
         if not piOnline:
             self.wfile.write('offline')
             return
         self.wfile.write('online')
-        # while True:
-            # print '-c'
         msg = self.rfile.readline().strip()
-        if msg == 'openthedoor':
-            condition.acquire()
-            openingDoor = True
-            clientName = self.identity
-            # 唤醒树莓派的连接
-            condition.notify()
-            condition.release()
+        # 唤醒树莓派的连接
+        clientMsgEvent.set(msg, self.identity)
 
     def openDoor(self, name):
+        # 正在开门
+        self.setOperatingDoor(True)
         self.wfile.write('-opendoor [%s]' % name)
-        self.log('%s open the door' % name)
+        self.log('%s open and close the door' % name)
+        time.sleep(10)
+        # 开门完毕
+        self.setOperatingDoor(False)
+
+    def doorOperate(self, operation, name):
+        # 正在开/关门
+        self.setOperatingDoor(True)
+        self.wfile.write('-%s [%s]' % (operation, name))
+        self.log('%s operate the door (%s)' % (name, operation))
+        time.sleep(5)
+        # 开/关门完毕
+        self.setOperatingDoor(False)
+
+    def exitPiServer(self, name):
+        self.wfile.write('-exit [%s]' % name)
+        self.log('%s close the Pi Server' % name)
+
+    def setOperatingDoor(self, operating):
+        global operatingDoor
+        condition.acquire()
+        try:
+            operatingDoor = operating
+        finally:
+            condition.release()
+
+    def setPiOnline(self, online):
+        global piOnline
+        condition.acquire()
+        try:
+            piOnline = online
+        finally:
+            condition.release()
+
 
 server = ThreadingTCPServer(('0.0.0.0', 8088), ServerHandle)
 server.serve_forever()
