@@ -15,10 +15,6 @@ else:
     exit()
 
 s.send('[msir]\n')
-piOnline = s.recv(1024).strip()
-if not piOnline == 'online':
-    print 'Pi Server offline'
-    exit()
 
 operation = 'opendoor'
 # operation = 'justopen'

@@ -36,8 +36,8 @@ def handle():
                     print '%s close the door' % identity
                     hardware.closeDoor()
                 elif order == 'exit':
-                    s.close()
                     break
+        s.close()
     except socket.error:
         print 'lost remote server(%s, %s)' % server
 

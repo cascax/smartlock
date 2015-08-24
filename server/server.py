@@ -8,8 +8,6 @@ identityRe = re.compile(r'\[(.+)\]')
 condition = threading.Condition()
 # 收到客户端信息事件
 clientMsgEvent = ThreadEvent()
-# 树莓派端在线状态
-piOnline = False
 # 正在操作门标志
 operatingDoor = False
 
@@ -31,11 +29,7 @@ class ServerHandle(StreamRequestHandler):
             return
         
         if self.identity == self.piName:
-            self.setPiOnline(True) # 树莓派服务器状态设置上线
-            try:
-                self.serverHandle()
-            finally:
-                self.setPiOnline(False) # 树莓派服务器状态设置下线
+            self.serverHandle()
         else:
             self.clientHandle()
 
@@ -45,7 +39,7 @@ class ServerHandle(StreamRequestHandler):
 
     def serverHandle(self):
         global operatingDoor
-
+        clientMsgEvent.clear()
         while True:
             # 等待客户端请求
             if not clientMsgEvent.isSet():
@@ -62,13 +56,7 @@ class ServerHandle(StreamRequestHandler):
                 self.exitPiServer(clientName)
                 break;
 
-
     def clientHandle(self):
-        global piOnline
-        if not piOnline:
-            self.wfile.write('offline')
-            return
-        self.wfile.write('online')
         msg = self.rfile.readline().strip()
         # 唤醒树莓派的连接
         clientMsgEvent.set(msg, self.identity)
@@ -100,14 +88,6 @@ class ServerHandle(StreamRequestHandler):
         condition.acquire()
         try:
             operatingDoor = operating
-        finally:
-            condition.release()
-
-    def setPiOnline(self, online):
-        global piOnline
-        condition.acquire()
-        try:
-            piOnline = online
         finally:
             condition.release()
 
