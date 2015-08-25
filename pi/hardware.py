@@ -7,7 +7,6 @@ GPIO.setmode(GPIO.BOARD)
 
 def led(open, ledPin = 23):
     """Set LED's status"""
-    print 'led',open
     GPIO.setup(ledPin, GPIO.OUT)
     GPIO.output(ledPin, open)
 
@@ -132,3 +131,4 @@ class Keypad():
         # close led
         if self.litLED:
             led(False)
+        self.litLED = False

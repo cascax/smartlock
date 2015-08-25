@@ -1,8 +1,8 @@
 import socket
 
 # server = ('45.62.118.214', 8088)
-# server = ('192.168.5.105', 8088)
-server = ('127.0.0.1', 8088)
+server = ('192.168.5.105', 8088)
+# server = ('127.0.0.1', 8088)
 
 s = socket.socket()
 s.settimeout(4)
