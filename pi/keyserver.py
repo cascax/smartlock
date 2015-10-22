@@ -2,7 +2,7 @@
 ##coding:utf-8
 import time, thread, hardware
 
-def main():
+def start():
     kp = hardware.Keypad()
     password = ''
 
@@ -22,4 +22,4 @@ def main():
             password += str(digit)
         time.sleep(0.3)
 
-if __name__ == '__main__': main()
+if __name__ == '__main__': start()

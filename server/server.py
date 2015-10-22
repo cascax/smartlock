@@ -49,7 +49,7 @@ class ServerHandle(StreamRequestHandler):
             if eventName == 'opendoor':
                 if not operatingDoor:
                     self.openDoor(clientName)
-            elif eventName == 'justopen' or eventName == 'closedoor':
+            elif eventName == 'justopen' or eventName == 'closedoor' or eventName == 'adjustdoor':
                 if not operatingDoor:
                     self.doorOperate(eventName, clientName)
             elif eventName == 'exitpi':

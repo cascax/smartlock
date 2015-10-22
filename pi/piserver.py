@@ -35,17 +35,20 @@ def handle():
                 elif order == 'closedoor':
                     print '%s close the door' % identity
                     hardware.closeDoor()
+                elif order == 'adjustdoor':
+                    print '%s adjust the door' % identity
+                    hardware.rotateMotor(20, True)
                 elif order == 'exit':
                     break
         s.close()
     except socket.error:
         print 'lost remote server(%s, %s)' % server
 
-def begin():
+def start():
     try:
         connect()
         handle()
     except socket.error, e:
         print 'connect failed [%d]: %s' % (e.errno, socket.errorTab[e.errno])
 
-begin()
+if __name__ == '__main__': start()
