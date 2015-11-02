@@ -8,13 +8,16 @@ class KeyPadServer(object):
     """树莓派端键盘输入服务器"""
     password = '28102B'
 
+    def __init__(self):
+        self.music = music.Music()
+
     def clear(self):
         """清除输入"""
         self.input = ''
 
     def doorbell(self):
         """门铃"""
-        music.play_this_thread('password_wrong')
+        self.music.play('password_wrong')
 
     def ok(self):
         """按下确认键"""
@@ -24,7 +27,7 @@ class KeyPadServer(object):
             hardware.openThenClose()
             self.input = ''
         else:
-            music.play('password_wrong')
+            self.music.play('password_wrong')
 
     def start(self):
         kp = hardware.Keypad()

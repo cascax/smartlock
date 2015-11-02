@@ -1,20 +1,35 @@
 # coding:utf-8
 # 音乐播放
 
-import pygame, thread
+import pygame
+from threading import Thread
 
-pygame.mixer.init()
-pygame.time.delay(500)
+class Play(Thread):
+    """多线程播放类"""
+    def __init__(self, sound):
+        super(Play, self).__init__()
+        self.sound = sound
 
-def play_this_thread(name):
-    filename = "wav/" + name + ".ogg"
-    sound = pygame.mixer.Sound(filename)
-    soundLen = sound.get_length()
-    if soundLen < 0.1:
-        print 'music "%s" can not play!' % name
-        return
-    sound.play()
-    pygame.time.delay((int)(soundLen*1000))
+    def run(self):
+        soundLen = self.sound.get_length()
+        if soundLen < 0.1:
+            print 'music "%s" can not play!' % name
+            return
+        self.sound.play()
+        pygame.time.delay((int)(soundLen*1000))
 
-def play(name):
-    thread.start_new_thread(play_this_thread, (name,))
+
+class Music(object):
+    """音乐播放类"""
+
+    def __init__(self):
+        pygame.mixer.init()
+        pygame.time.delay(500)
+
+    def play(self, name):
+        if hasattr(self, 'soundThread') and self.soundThread.is_alive():
+            self.sound.stop()
+        filename = "wav/" + name + ".ogg"
+        self.sound = pygame.mixer.Sound(filename)
+        self.soundThread = Play(self.sound)
+        self.soundThread.start()
