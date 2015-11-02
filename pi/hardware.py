@@ -1,4 +1,6 @@
-#coding:utf-8
+# coding:utf-8
+# 树莓派硬件控制模块
+
 import RPi.GPIO as GPIO
 import time, sys
 

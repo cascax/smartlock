@@ -1,8 +1,11 @@
 #!/usr/bin/env python
-##coding:utf-8
-import socket, re, time
-import hardware
+#coding:utf-8
+# 连接远程服务器的树莓派端
 
+import socket, re, time
+import hardware, filelog
+
+log = filelog.Log()
 msgTemplate = re.compile(r'\-(\w+) \[(.+)\]')
 s = socket.socket()
 # server = ('45.62.118.214', 8088)
@@ -12,9 +15,9 @@ def connect():
     s.connect(server)
     ifsucc = s.recv(1024).strip()
     if ifsucc == 'success':
-        print 'remote server(%s, %s) connected successful' % server
+        log('remote server(%s, %s) connected successful' % server)
     else:
-        print 'remote server(%s, %s) refused' % server
+        log('remote server(%s, %s) refused' % server)
         exit()
     s.send('[ServerPi]\n')
 
@@ -27,16 +30,16 @@ def handle():
                 order = match.group(1)
                 identity = match.group(2)
                 if order == 'opendoor':
-                    print '%s open and close the door' % identity
+                    log('%s open and close the door' % identity)
                     hardware.openThenClose()
                 elif order == 'justopen':
-                    print '%s open the door' % identity
+                    log('%s open the door' % identity)
                     hardware.openDoor()
                 elif order == 'closedoor':
-                    print '%s close the door' % identity
+                    log('%s close the door' % identity)
                     hardware.closeDoor()
                 elif order == 'adjustdoor':
-                    print '%s adjust the door' % identity
+                    log('%s adjust the door' % identity)
                     hardware.rotateMotor(20, True)
                 elif order == 'exit':
                     break

@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 #coding:utf-8
+# 远程服务器端
+
 from SocketServer import StreamRequestHandler, ThreadingTCPServer
 from ThreadEvent import ThreadEvent
 import filelog, re, threading, time
@@ -14,9 +16,12 @@ operatingDoor = False
 class ServerHandle(StreamRequestHandler):
     piName = 'ServerPi'
 
+    def __init__(self):
+        self.log = filelog.Log()
+        super(ServerHandle, self).__init__()
+
     def handle(self):
         self.addr = self.request.getpeername()[0]
-        self.log = filelog.Log()
         self.wfile.write('success')
         msg = self.rfile.readline().strip()
         match = identityRe.match(msg)
