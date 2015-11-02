@@ -13,7 +13,7 @@ class Play(Thread):
     def run(self):
         soundLen = self.sound.get_length()
         if soundLen < 0.1:
-            print 'music "%s" can not play!' % name
+            print 'music can not play!'
             return
         self.sound.play()
         pygame.time.delay((int)(soundLen*1000))
