@@ -16,9 +16,9 @@ operatingDoor = False
 class ServerHandle(StreamRequestHandler):
     piName = 'ServerPi'
 
-    def __init__(self):
+    def __init__(self, *argc, **argkw):
         self.log = filelog.Log()
-        super(ServerHandle, self).__init__()
+        StreamRequestHandler.__init__(self, *argc, **argkw)
 
     def handle(self):
         self.addr = self.request.getpeername()[0]
