@@ -17,7 +17,7 @@ class KeyPadServer(object):
 
     def doorbell(self):
         """门铃"""
-        self.music.play('password_wrong')
+        self.music.play('doorbell')
 
     def ok(self):
         """按下确认键"""
@@ -48,6 +48,13 @@ class KeyPadServer(object):
                 self.input += str(digit)
             time.sleep(0.3)
 
+    def end(self):
+        hardware.clean()
+
 if __name__ == '__main__':
     server = KeyPadServer()
-    server.start()
+    try:
+        server.start()
+    except KeyboardInterrupt:
+        server.end()
+        print 'Bye!'

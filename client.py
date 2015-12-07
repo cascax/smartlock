@@ -1,7 +1,7 @@
 import socket
 
-server = ('45.62.118.214', 8088)
-# server = ('192.168.5.105', 8088)
+# server = ('45.62.118.214', 8088)
+server = ('192.168.5.105', 8088)
 # server = ('127.0.0.1', 8088)
 
 s = socket.socket()
@@ -12,14 +12,16 @@ if ifsucc == 'success':
     print 'remote server(%s, %s) connected successful' % server
 else:
     print 'connect failed'
+    print ifsucc
     exit()
 
 s.send('[msir]\n')
 
-operation = 'opendoor'
+# operation = 'opendoor'
 # operation = 'justopen'
 # operation = 'closedoor'
 # operation = 'exitpi'
+operation = 'sound[password_wrong]'
 
 s.send(operation + '\n')
 print 'sent operation [%s]' % operation

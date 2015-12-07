@@ -55,6 +55,9 @@ def openThenClose(steps = 270):
     time.sleep(3)
     closeDoor(steps)
 
+def clean():
+    GPIO.cleanup()
+
 class Keypad():
     
     KEYPAD = [
