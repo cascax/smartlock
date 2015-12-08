@@ -1,5 +1,7 @@
 test.py
 *.pyc
-log.txt
-upload.bat
+*.wav
+*.mp3
+*.bat
+*.txt
 run.sh
