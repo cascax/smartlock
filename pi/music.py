@@ -1,7 +1,7 @@
 # coding:utf-8
 # 音乐播放
 
-import pygame
+import pygame, os
 from threading import Thread
 
 class Play(Thread):
@@ -29,7 +29,10 @@ class Music(object):
     def play(self, name):
         if hasattr(self, 'soundThread') and self.soundThread.is_alive():
             self.sound.stop()
-        filename = "wav/" + name + ".ogg"
+        filename = self._getFileName(name)
         self.sound = pygame.mixer.Sound(filename)
         self.soundThread = Play(self.sound)
         self.soundThread.start()
+
+    def _getFileName(self, name):
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'wav', name + '.ogg')
