@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 #coding:utf-8
 
-import time, thread, hardware, music, config
+import time, thread, hardware, music
+from config import Config
 
 
 class KeyPadServer(object):
@@ -9,8 +10,8 @@ class KeyPadServer(object):
 
     def __init__(self):
         self.music = music.Music()
-        config = config.Config('pi.ini')
-        self.password = config('piserver', 'password')
+        config = Config('pi.ini')
+        self.password = config('keyserver', 'password')
 
     def clear(self):
         """清除输入"""
