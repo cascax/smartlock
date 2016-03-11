@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 #coding:utf-8
 
-import time, thread, hardware, music
+import time, thread, hardware, music, config
 
 
 class KeyPadServer(object):
     """树莓派端键盘输入服务器"""
-    password = '28102B'
 
     def __init__(self):
         self.music = music.Music()
+        config = config.Config('pi.ini')
+        self.password = config('piserver', 'password')
 
     def clear(self):
         """清除输入"""
