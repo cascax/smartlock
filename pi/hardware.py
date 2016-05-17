@@ -2,7 +2,7 @@
 # 树莓派硬件控制模块
 
 import RPi.GPIO as GPIO
-import time, sys
+import time, sys, thread
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -19,6 +19,10 @@ def flickerLED(times = 1, ledPin = 23):
         time.sleep(0.1)
         GPIO.output(ledPin, False)
         time.sleep(0.1)
+
+def ledDelay(open):
+    time.sleep(0.05)
+    led(open)
 
 def rotateMotor(steps, clockwise=True):
     if clockwise:
@@ -54,6 +58,9 @@ def openThenClose(steps = 270):
     openDoor(steps)
     time.sleep(3)
     closeDoor(steps)
+
+def adjustDoor():
+    hardware.rotateMotor(20, True)
 
 def clean():
     GPIO.cleanup()
@@ -98,9 +105,6 @@ class Keypad():
         if rowVal < 0 or rowVal > self.rowNum-1:
             self.exit()
             return
-        # light led
-        led(True)
-        self.litLED = True
 
         # Convert columns to input
         for j in range(self.columnNum):
@@ -116,12 +120,16 @@ class Keypad():
         for j in range(self.columnNum):
             tmpRead = GPIO.input(self.COLUMN[j])
             if tmpRead == 1:
-                colVal=j
+                colVal = j
 
         # if colVal is not 0 thru 2 then no button was pressed and we can exit
         if colVal < 0 or colVal > self.columnNum-1:
             self.exit()
             return
+
+        # light led
+        led(True)
+        self.litLED = True
 
         # Return the value of the key pressed
         self.exit()
@@ -135,5 +143,5 @@ class Keypad():
                 GPIO.setup(self.COLUMN[j], GPIO.IN, pull_up_down=GPIO.PUD_UP)
         # close led
         if self.litLED:
-            led(False)
+            thread.start_new_thread(ledDelay, (False,))
         self.litLED = False
