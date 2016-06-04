@@ -47,7 +47,7 @@ class KeyPadServer(object):
     def cleanUp(self):
         """清除GPIO状态"""
         if self.input == self.password:
-            hardware.clear()
+            hardware.clean()
             self.log('clean up')
         self.clear()
 

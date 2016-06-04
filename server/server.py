@@ -30,7 +30,7 @@ class ServerHandle(StreamRequestHandler):
             self.log('Got connection from %s(%s)' % (self.identity, self.addr))
         else:
             self.identity = ''
-            self.log('False connection from (%s)' % self.addr)
+            self.log('False connection from (%s): %s' % (self.addr, msg))
             return
         
         if self.identity == self.piName:
@@ -97,5 +97,5 @@ class ServerHandle(StreamRequestHandler):
             condition.release()
 
 
-server = ThreadingTCPServer(('0.0.0.0', 8088), ServerHandle)
+server = ThreadingTCPServer(('0.0.0.0', 8089), ServerHandle)
 server.serve_forever()

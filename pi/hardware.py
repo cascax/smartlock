@@ -60,7 +60,7 @@ def openThenClose(steps = 270):
     closeDoor(steps)
 
 def adjustDoor():
-    hardware.rotateMotor(20, True)
+    rotateMotor(20, True)
 
 def clean():
     GPIO.cleanup()

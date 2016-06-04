@@ -8,8 +8,9 @@ import hardware, filelog
 log = filelog.Log()
 msgTemplate = re.compile(r'\-(\w+) \[(.+)\]')
 s = socket.socket()
-# server = ('45.62.118.214', 8088)
-server = ('127.0.0.1', 8088)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+server = ('45.62.118.214', 8089)
+# server = ('127.0.0.1', 8089)
 
 def connect():
     s.connect(server)
@@ -40,12 +41,13 @@ def handle():
                     hardware.closeDoor()
                 elif order == 'adjustdoor':
                     log('%s adjust the door' % identity)
-                    hardware.rotateMotor(20, True)
+                    hardware.adjustDoor()
                 elif order == 'exit':
                     break
         s.close()
     except socket.error:
         print 'lost remote server(%s, %s)' % server
+        log('ERROR: lost remote server(%s, %s)' % server)
 
 def start():
     try:
@@ -53,5 +55,6 @@ def start():
         handle()
     except socket.error, e:
         print 'connect failed [%d]: %s' % (e.errno, socket.errorTab[e.errno])
+        log('ERROR: connect failed [%d]: %s' % (e.errno, socket.errorTab[e.errno]))
 
 if __name__ == '__main__': start()
